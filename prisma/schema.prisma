@@ -1,0 +1,27 @@
+// prisma/schema.prisma
+
+// Proveedor de Base de Datos
+datasource db {
+  provider = "postgresql" 
+  url      = env("DATABASE_URL")
+}
+
+// Generador del Cliente de Prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Modelo de Datos (Tabla de Leads)
+model Lead {
+  id              String    @id @default(uuid()) 
+  status          String    @default("PENDIENTE") 
+  createdAt       DateTime  @default(now())       
+  origin          String
+  destination     String
+  departureDate   DateTime
+  returnDate      DateTime? 
+  passengers      Int       
+  name            String
+  email           String
+  phone           String
+}
