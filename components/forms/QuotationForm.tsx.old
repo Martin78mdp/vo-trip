@@ -1,14 +1,13 @@
 // components/forms/QuotationForm.tsx
-
 "use client";
 import React, { useState } from 'react';
 
-// 1. Definición de tipos para TypeScript (SIN CAMBIOS)
+// 1. Definición de tipos para TypeScript
 interface FormData {
   origin: string;
   destination: string;
   departureDate: string;
-  returnDate: string; 
+  returnDate: string; // Opcional
   passengers: number;
   name: string;
   email: string;
@@ -19,8 +18,7 @@ export default function QuotationForm() {
   const [formData, setFormData] = useState<FormData>({
     origin: '',
     destination: '',
-    // Las fechas se inicializan como cadenas vacías, lo cual está bien para input[type="date"]
-    departureDate: '', 
+    departureDate: '',
     returnDate: '',
     passengers: 1,
     name: '',
@@ -32,60 +30,25 @@ export default function QuotationForm() {
     const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
+      // Convierte a número si el input es de tipo 'number'
       [name]: type === 'number' ? parseInt(value) : value,
     }));
   };
 
-  // 2. FUNCIÓN DE ENVÍO MODIFICADA (Ahora llama al API Endpoint)
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Convertimos el estado de React (formData) a JSON para enviarlo
-    const dataToSend = JSON.stringify(formData); 
-    
-    // Desactivamos el formulario temporalmente para evitar doble clic
-    const submitButton = e.currentTarget.querySelector('button[type="submit"]');
-    if (submitButton) submitButton.textContent = 'Enviando...';
-    if (submitButton) submitButton.disabled = true;
-
-    try {
-        // La solicitud va a nuestro nuevo endpoint de Next.js
-        const response = await fetch('/api/leads', { 
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: dataToSend,
-        });
-
-        if (response.ok) {
-            // El API respondió 201 (Creado)
-            alert("✅ ¡Éxito! Tu solicitud de cotización ha sido guardada. Nos contactaremos pronto.");
-            // Opcional: limpiar el formulario después del éxito
-            setFormData({ origin: '', destination: '', departureDate: '', returnDate: '', passengers: 1, name: '', email: '', phone: '' }); 
-
-        } else {
-            // Manejar errores (ej: si faltan datos según la validación del API)
-            const errorData = await response.json();
-            alert(`⚠️ Error al enviar la solicitud: ${errorData.error || 'Problema desconocido.'}`);
-        }
-    } catch (error) {
-        console.error("Error de red:", error);
-        alert("❌ Error de conexión. Revisa tu internet o inténtalo más tarde.");
-    } finally {
-        // Restaura el botón sin importar el resultado
-        if (submitButton) submitButton.textContent = 'SOLICITAR COTIZACIÓN';
-        if (submitButton) submitButton.disabled = false;
-    }
+    console.log('Datos a enviar (simulación):', formData);
+    // TODO: En la Semana 3, reemplazaremos este alert con la conexión a Google Forms/Formspree
+    alert('¡Solicitud enviada! En breve un agente se comunicará contigo.'); 
+    // Opcional: limpiar el formulario después del envío
+    // setFormData({ origin: '', destination: '', ... }); 
   };
 
   return (
     <form onSubmit={handleSubmit} className="p-8 bg-white shadow-xl rounded-xl max-w-2xl mx-auto space-y-6">
-      {/* ... (Todo el HTML y JSX del formulario se mantiene igual) ... */}
-
       <h2 className="text-3xl font-bold text-center text-blue-800">Cotiza tu Vuelo Aquí</h2>
       <p className="text-center text-gray-600">Completa los datos y te encontraremos el mejor precio.</p>
-      
+
       {/* Grid de Origen y Destino */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -95,7 +58,6 @@ export default function QuotationForm() {
             name="origin"
             id="origin"
             required
-            value={formData.origin}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Ej: Buenos Aires (EZE)"
@@ -108,7 +70,6 @@ export default function QuotationForm() {
             name="destination"
             id="destination"
             required
-            value={formData.destination}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Ej: Madrid (MAD)"
@@ -125,7 +86,6 @@ export default function QuotationForm() {
             name="departureDate"
             id="departureDate"
             required
-            value={formData.departureDate}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
           />
@@ -136,7 +96,6 @@ export default function QuotationForm() {
             type="date"
             name="returnDate"
             id="returnDate"
-            value={formData.returnDate}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
           />
@@ -169,7 +128,6 @@ export default function QuotationForm() {
             name="name"
             id="name"
             required
-            value={formData.name}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Martín V."
@@ -182,7 +140,6 @@ export default function QuotationForm() {
             name="email"
             id="email"
             required
-            value={formData.email}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
             placeholder="ejemplo@email.com"
@@ -195,7 +152,6 @@ export default function QuotationForm() {
             name="phone"
             id="phone"
             required
-            value={formData.phone}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
             placeholder="+54 9 11 XXXX-XXXX"

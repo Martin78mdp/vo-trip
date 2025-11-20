@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/layout.tsx.old"  ],
+, "app/layout.tsx.old", "components/forms/QuotationForm.tsx.old"  ],
   "exclude": ["node_modules"]
 }
