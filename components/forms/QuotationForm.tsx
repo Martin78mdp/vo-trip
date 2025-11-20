@@ -19,7 +19,6 @@ export default function QuotationForm() {
   const [formData, setFormData] = useState<FormData>({
     origin: '',
     destination: '',
-    // Las fechas se inicializan como cadenas vacías, lo cual está bien para input[type="date"]
     departureDate: '', 
     returnDate: '',
     passengers: 1,
@@ -36,20 +35,22 @@ export default function QuotationForm() {
     }));
   };
 
-  // 2. FUNCIÓN DE ENVÍO MODIFICADA (Ahora llama al API Endpoint)
+  // 2. FUNCIÓN DE ENVÍO CORREGIDA
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Convertimos el estado de React (formData) a JSON para enviarlo
     const dataToSend = JSON.stringify(formData); 
     
-    // Desactivamos el formulario temporalmente para evitar doble clic
-    const submitButton = e.currentTarget.querySelector('button[type="submit"]');
-    if (submitButton) submitButton.textContent = 'Enviando...';
-    if (submitButton) submitButton.disabled = true;
+    // CORRECCIÓN CLAVE: Forzamos el tipo a HTMLButtonElement para que TypeScript acepte '.disabled'
+    const submitButton = e.currentTarget.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+    
+    // Desactivamos el formulario temporalmente
+    if (submitButton) {
+        submitButton.textContent = 'Enviando...';
+        submitButton.disabled = true; // TypeScript ya no se queja aquí
+    }
 
     try {
-        // La solicitud va a nuestro nuevo endpoint de Next.js
         const response = await fetch('/api/leads', { 
             method: 'POST',
             headers: {
@@ -59,13 +60,10 @@ export default function QuotationForm() {
         });
 
         if (response.ok) {
-            // El API respondió 201 (Creado)
             alert("✅ ¡Éxito! Tu solicitud de cotización ha sido guardada. Nos contactaremos pronto.");
-            // Opcional: limpiar el formulario después del éxito
             setFormData({ origin: '', destination: '', departureDate: '', returnDate: '', passengers: 1, name: '', email: '', phone: '' }); 
 
         } else {
-            // Manejar errores (ej: si faltan datos según la validación del API)
             const errorData = await response.json();
             alert(`⚠️ Error al enviar la solicitud: ${errorData.error || 'Problema desconocido.'}`);
         }
@@ -74,15 +72,15 @@ export default function QuotationForm() {
         alert("❌ Error de conexión. Revisa tu internet o inténtalo más tarde.");
     } finally {
         // Restaura el botón sin importar el resultado
-        if (submitButton) submitButton.textContent = 'SOLICITAR COTIZACIÓN';
-        if (submitButton) submitButton.disabled = false;
+        if (submitButton) {
+            submitButton.textContent = 'SOLICITAR COTIZACIÓN';
+            submitButton.disabled = false;
+        }
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="p-8 bg-white shadow-xl rounded-xl max-w-2xl mx-auto space-y-6">
-      {/* ... (Todo el HTML y JSX del formulario se mantiene igual) ... */}
-
       <h2 className="text-3xl font-bold text-center text-blue-800">Cotiza tu Vuelo Aquí</h2>
       <p className="text-center text-gray-600">Completa los datos y te encontraremos el mejor precio.</p>
       
