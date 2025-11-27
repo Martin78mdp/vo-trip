@@ -95,7 +95,7 @@ export default function QuotationForm() {
             required
             value={formData.origin}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
+            className="text-grey-900 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Ej: Buenos Aires (EZE)"
           />
         </div>
@@ -108,7 +108,7 @@ export default function QuotationForm() {
             required
             value={formData.destination}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
+            className="text-grey-900 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Ej: Madrid (MAD)"
           />
         </div>
@@ -125,7 +125,7 @@ export default function QuotationForm() {
             required
             value={formData.departureDate}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
+            className="text-grey-900 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         <div>
@@ -136,7 +136,7 @@ export default function QuotationForm() {
             id="returnDate"
             value={formData.returnDate}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
+            className="text-grey-900 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         <div>
@@ -150,7 +150,7 @@ export default function QuotationForm() {
             max="10"
             value={formData.passengers}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
+            className="text-grey-900 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
       </div>
@@ -169,7 +169,7 @@ export default function QuotationForm() {
             required
             value={formData.name}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
+            className="text-grey-900 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Martín V."
           />
         </div>
@@ -182,7 +182,7 @@ export default function QuotationForm() {
             required
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
+            className="text-grey-900 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
             placeholder="ejemplo@email.com"
           />
         </div>
@@ -195,7 +195,7 @@ export default function QuotationForm() {
             required
             value={formData.phone}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
+            className="text-grey-900 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500"
             placeholder="+54 9 11 XXXX-XXXX"
           />
         </div>

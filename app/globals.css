@@ -24,3 +24,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+/* app/globals.css (añadir al final) */
+
+/* Clase para forzar el color del texto en inputs conflictivos */
+.force-input-black {
+  /* La directiva !important asegura la máxima prioridad para sobrescribir librerías */
+  color: #1f2937 !important; /* Tailwind gray-800 o black */
+  -webkit-text-fill-color: #1f2937 !important; /* Para asegurar que el color funcione en iOS/Safari */
+}

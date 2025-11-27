@@ -10,6 +10,12 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+enum Status {
+  PENDIENTE
+  COTIZADO
+  VENDIDO
+  CANCELADO // Opcional: Útil para gestión
+}
 
 // Modelo de Datos (Tabla de Leads)
 model Lead {
@@ -24,4 +30,58 @@ model Lead {
   name            String
   email           String
   phone           String
+}
+model AccommodationLead {
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  status            Status   @default(PENDIENTE)
+
+  // 1. Detalles de la Búsqueda
+  destination       String
+  checkInDate       DateTime
+  checkOutDate      DateTime
+  guests            Int
+  rooms             Int? // Campo opcional, útil si buscan un hotel.
+  typeOfAccommodation String // Ejemplo: "Hotel", "Departamento", "Casa", "Cabaña"
+
+  // 2. Información del Cliente
+  name              String
+  email             String
+  phone             String
+}
+model CarRentalLead {
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  status            Status   @default(PENDIENTE)
+
+  // 1. Detalles del Alquiler
+  pickupLocation    String // Ciudad o aeropuerto de recogida
+  returnLocation    String // Ciudad o aeropuerto de devolución
+  pickupDate        DateTime
+  returnDate        DateTime
+  carType           String?  // Ej: "Economico", "SUV", "Camioneta"
+  ageOfDriver       Int?     // La edad del conductor afecta el precio, importante
+
+  // 2. Información del Cliente
+  name              String
+  email             String
+  phone             String
+}
+model ItineraryLead {
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  status            Status   @default(PENDIENTE)
+
+  // 1. Detalles del Viaje Personalizado
+  departureCity     String?  // Ciudad de partida
+  desiredDestinations String // Ej: "Norte Argentino, Salta y Jujuy"
+  budgetPerPerson   String?  // Ej: "Medio (500-1000 USD)"
+  durationDays      Int?     // Duración en días
+  travelType        String?  // Ej: "Aventura", "Familiar", "Cultural"
+  notes             String?  // Cualquier otra solicitud del cliente
+  
+  // 2. Información del Cliente
+  name              String
+  email             String
+  phone             String
 }
