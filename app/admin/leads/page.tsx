@@ -65,12 +65,15 @@ const TABS = {
     itinerarios: { label: 'Diseño de Viaje (Valor)', endpoint: 'itineraries', component: ItineraryTable },
 } as const; 
 
-// SOLUCIÓN FINAL: Usamos la desestructuración de 'searchParams' en la firma
+// SOLUCIÓN FINAL: Usamos la sintaxis que evita el error de Promesa
 export default async function AdminLeadsPage({
     searchParams, 
 }: {
     searchParams: { tab?: keyof typeof TABS };
 }) {
+    // Lectura directa del Parámetro (Esto evita el error de compilación de Turbopack)
+    const activeTabKey = (searchParams.tab || 'vuelos') as keyof typeof TABS; 
+
     // Leemos el token del entorno (Solución al error de ámbito)
     const ADMIN_TOKEN = process.env.ADMIN_TOKEN; 
     
@@ -79,16 +82,14 @@ export default async function AdminLeadsPage({
         notFound(); 
     }
 
-    // 1. Determinar la pestaña activa (Lectura directa para evitar Promesa)
-    // El compilador asume que 'searchParams' es el objeto Promise, pero lo forzamos a ser string.
-    const activeTabKey = (searchParams.tab || 'vuelos') as keyof typeof TABS; 
+    // 2. Determinar la pestaña activa
     const activeTab = TABS[activeTabKey] || TABS.vuelos;
 
-    // 2. Obtener los leads de la pestaña activa
+    // 3. Obtener los leads de la pestaña activa
     const leads: any[] = await getLeads(activeTab.endpoint); 
     const TotalLeads = leads.length;
 
-    // 3. El componente de tabla se asigna dinámicamente
+    // 4. El componente de tabla se asigna dinámicamente
     const LeadsComponent = activeTab.component;
 
 
