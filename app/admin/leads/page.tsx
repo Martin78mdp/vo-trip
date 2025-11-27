@@ -1,12 +1,13 @@
 // app/admin/leads/page.tsx - INTERFAZ UNIFICADA FINAL
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
+
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import Link from 'next/link';
-import React from 'react'; 
+import React from 'react';
 
 // Importar los componentes de tabla
-import FlightLeadsTable from '@/components/admin/FlightLeadsTable'; 
+import FlightLeadsTable from '@/components/admin/FlightLeadsTable';
 import AccommodationTable from '@/components/admin/AccommodationTable';
 import CarRentalTable from '@/components/admin/CarRentalTable';
 import ItineraryTable from '@/components/admin/ItineraryTable';
@@ -14,33 +15,38 @@ import ItineraryTable from '@/components/admin/ItineraryTable';
 // Tipos genéricos para el fetch de leads
 interface LeadCommon { id: string; createdAt: string; status: string; name: string; email: string; phone: string; }
 
-// Función de fetch genérica para las 4 APIs
+// ---------------------------------------------------------
+// FUNCIÓN GETLEADS — VERSIÓN FINAL (CORREGIDA PARA VERCEL)
+// ---------------------------------------------------------
 async function getLeads(endpoint: 'leads' | 'accommodation' | 'carrental' | 'itineraries') {
     const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
 
     if (!ADMIN_TOKEN) {
         console.error("ADMIN_TOKEN no configurado.");
-        notFound(); 
+        notFound();
     }
 
-    // Definición de la URL base para el entorno local y de producción
-    const baseUrl = process.env.NODE_ENV === 'production' 
+    const baseUrl = process.env.NODE_ENV === 'production'
         ? `https://${process.env.VERCEL_URL}`
         : 'http://localhost:3000';
-        
-    const apiUrl = `${baseUrl}/api/admin/${endpoint}?token=${ADMIN_TOKEN}`;
-    
+
+    // ❗ Token YA NO SE PASA POR URL
+    const apiUrl = `${baseUrl}/api/admin/${endpoint}`;
+
     try {
-        const response = await fetch(apiUrl, { 
+        const response = await fetch(apiUrl, {
             method: 'GET',
-            cache: 'no-store' // CRUCIAL: siempre obtener datos frescos
+            cache: 'no-store',          // 🔥 evita cualquier cacheo
+            headers: {
+                Authorization: `Bearer ${ADMIN_TOKEN}`, // 🔥 token seguro
+            },
         });
 
         if (response.status === 401) {
-            console.error(`Token de administración inválido para endpoint: ${endpoint}`);
+            console.error(`Token inválido para endpoint: ${endpoint}`);
             notFound();
         }
-        
+
         if (!response.ok) {
             throw new Error(`Error al obtener leads de ${endpoint}: ${response.statusText}`);
         }
@@ -49,49 +55,43 @@ async function getLeads(endpoint: 'leads' | 'accommodation' | 'carrental' | 'iti
 
     } catch (error) {
         console.error(`Error de red o API para ${endpoint}:`, error);
-        notFound(); 
+        notFound();
     }
 }
 
-// -----------------------------------------------------------------
-// Componente de Pestañas
-// -----------------------------------------------------------------
-
-// Defino los tipos de pestañas disponibles
+// ---------------------------------------------------------
+// DEFINICIÓN DE PESTAÑAS
+// ---------------------------------------------------------
 const TABS = {
     vuelos: { label: 'Vuelos', endpoint: 'leads', component: FlightLeadsTable },
     alojamiento: { label: 'Alojamiento', endpoint: 'accommodation', component: AccommodationTable },
     autos: { label: 'Alquiler de Autos', endpoint: 'carrental', component: CarRentalTable },
     itinerarios: { label: 'Diseño de Viaje (Valor)', endpoint: 'itineraries', component: ItineraryTable },
-} as const; 
+} as const;
 
-// SOLUCIÓN FINAL: Usamos la sintaxis que evita el error de Promesa
+// ---------------------------------------------------------
+// COMPONENTE PRINCIPAL
+// ---------------------------------------------------------
 export default async function AdminLeadsPage({
-    searchParams, 
+    searchParams,
 }: {
     searchParams: { tab?: keyof typeof TABS };
 }) {
-    // Lectura directa del Parámetro (Esto evita el error de compilación de Turbopack)
-    const activeTabKey = (searchParams.tab || 'vuelos') as keyof typeof TABS; 
 
-    // Leemos el token del entorno (Solución al error de ámbito)
-    const ADMIN_TOKEN = process.env.ADMIN_TOKEN; 
-    
-    // Si el token no está, lanzamos 404 (seguridad)
-    if (!ADMIN_TOKEN) {
-        notFound(); 
-    }
-
-    // 2. Determinar la pestaña activa
+    // 1. Determinar pestaña activa
+    const activeTabKey = (searchParams.tab || 'vuelos') as keyof typeof TABS;
     const activeTab = TABS[activeTabKey] || TABS.vuelos;
 
-    // 3. Obtener los leads de la pestaña activa
-    const leads: any[] = await getLeads(activeTab.endpoint); 
+    // 2. Validar token del entorno
+    const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
+    if (!ADMIN_TOKEN) notFound();
+
+    // 3. Obtener leads de la pestaña
+    const leads: any[] = await getLeads(activeTab.endpoint);
     const TotalLeads = leads.length;
 
-    // 4. El componente de tabla se asigna dinámicamente
+    // 4. Asignar componente dinámico
     const LeadsComponent = activeTab.component;
-
 
     return (
         <div className="min-h-screen bg-gray-50 p-8">
@@ -129,16 +129,14 @@ export default async function AdminLeadsPage({
                 </nav>
             </div>
 
-
-            {/* Contenido de la Tabla */}
+            {/* Contenido */}
             <Suspense fallback={<div>Cargando leads...</div>}>
                 {TotalLeads === 0 ? (
                     <div className="text-center p-10 bg-white shadow rounded-lg text-gray-600">
                         No se encontraron leads para esta categoría ({activeTab.label}).
                     </div>
                 ) : (
-                    // Renderizamos el componente de tabla dinámicamente
-                    <LeadsComponent leads={leads as any} token={ADMIN_TOKEN} /> 
+                    <LeadsComponent leads={leads as any} token={ADMIN_TOKEN} />
                 )}
             </Suspense>
         </div>
